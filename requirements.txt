@@ -1,0 +1,20 @@
+# --- Core pipeline ---------------------------------------------------------
+markdownify==0.13.1
+beautifulsoup4==4.12.3
+lxml==5.3.0
+PyYAML==6.0.2
+python-dateutil==2.9.0.post0
+chardet==5.2.0
+
+# --- Document conversion (GPU accelerated) ---------------------------------
+# marker-pdf embarque Surya (layout + OCR + tables) et tourne sur CUDA via
+# la variable d'environnement TORCH_DEVICE.
+marker-pdf==1.10.1
+
+# --- Fallback CPU / extraction rapide --------------------------------------
+PyMuPDF==1.24.14
+pytesseract==0.3.13
+Pillow==11.0.0
+
+# --- Divers ----------------------------------------------------------------
+watchdog==6.0.0

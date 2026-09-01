@@ -1,0 +1,43 @@
+services:
+  ingest-mail-to-md:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ingest-mail-to-md:latest
+    container_name: ingest-mail-to-md
+    env_file:
+      - .env
+    environment:
+      SOURCE_DIR: /data/source
+      DEST_DIR: /data/dest
+      STATE_FILE: /data/state/processed.json
+      TORCH_DEVICE: ${TORCH_DEVICE:-cuda}
+      WATCH: ${WATCH:-false}
+      POLL_INTERVAL: ${POLL_INTERVAL:-30}
+      DELETE_AFTER: ${DELETE_AFTER:-false}
+      OCR_LANGS: ${OCR_LANGS:-fra+eng}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    volumes:
+      # Dossier alimenté par Thunderbird (.eml + pièces jointes exportées).
+      - ${SOURCE_DIR}:/data/source
+      # Inbox du coffre Obsidian.
+      - ${DEST_DIR}:/data/dest
+      # Journal des fichiers déjà traités (idempotence entre deux runs).
+      - ingest-state:/data/state
+      # Poids Surya/marker : évite un re-téléchargement à chaque démarrage.
+      - ingest-models:/models
+    # Passage de la carte graphique NVIDIA au conteneur.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: ${RESTART_POLICY:-no}
+
+volumes:
+  ingest-state:
+  ingest-models:
